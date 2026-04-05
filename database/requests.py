@@ -37,7 +37,6 @@ async def new(id:int):
                 db.add(User(id=id, link=link))
                 await db.commit()
                 return link
-                break
                 
 
 async def getUser(id:int):

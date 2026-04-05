@@ -154,9 +154,25 @@ async def replyMessage(m: Message, state: FSMContext):
     await m.bot.delete_message(m.chat.id, messageId)
     await state.clear()
 
-    await m.bot.send_message(targetUser.id, f"""↩️ Тебе ответили анонимно:
+    reply_markup = replyKeyboard(senderUser.link).as_markup()
 
-<blockquote>{m.text}</blockquote>""", reply_markup=replyKeyboard(senderUser.link).as_markup())
+    if m.text:
+        await m.bot.send_message(targetUser.id, f"""↩️ Тебе ответили анонимно:
+
+<blockquote>{m.text}</blockquote>""", reply_markup=reply_markup)
+    elif m.photo:
+        await m.bot.send_photo(targetUser.id, photo=m.photo[-1].file_id, caption="↩️ Тебе ответили анонимно (фото)", reply_markup=reply_markup)
+    elif m.video:
+        await m.bot.send_video(targetUser.id, video=m.video.file_id, caption="↩️ Тебе ответили анонимно (видео)", reply_markup=reply_markup)
+    elif m.voice:
+        await m.bot.send_voice(targetUser.id, voice=m.voice.file_id, caption="↩️ Тебе ответили анонимно (голосовое)", reply_markup=reply_markup)
+    elif m.video_note:
+        await m.bot.send_video_note(targetUser.id, video_note=m.video_note.file_id, reply_markup=reply_markup)
+    elif m.sticker:
+        await m.bot.send_sticker(targetUser.id, sticker=m.sticker.file_id, reply_markup=reply_markup)
+    else:
+        await sendMainMenu(m, link)
+        return
 
     await m.answer("<b>Ответ отправлен ✅</b>")
 
